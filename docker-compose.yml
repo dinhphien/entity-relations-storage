@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  api_server:
+    image: dinhphien/flask_api:v0.0.9
+    ports:
+      - 8888:5000
+    environment:
+      - BIND_HOST=0.0.0.0
+      - BIND_PORT=8888
+      - NEO4J_HOST=192.168.99.1
+      - NEO4J_PORT=7687
+      - NEO4J_USER=neo4j
+      - NEO4J_PASSWORD=neo4j
+#      - NEO4J_SCHEME=bolt+routing
+      - NEO4J_SCHEME=bolt
+    deploy:
+      mode: replicated
+      endpoint_mode: vip
+      replicas: 2
+  visualizer:
+    image: dockersamples/visualizer
+    ports:
+      - "8080:8080"
+    stop_grace_period: 1m30s
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    deploy:
+      placement:
+        constraints: [node.role == manager]
